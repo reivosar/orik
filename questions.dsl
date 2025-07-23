@@ -252,42 +252,10 @@ claude_dsl:
           - "What are the quantitative performance targets?"
 
   components:
-    recommendation_templates:
-      bug_fix:
-        current_behavior: "Button doesn't respond when clicked"
-        correct_behavior: "Button should submit form per AC-015"
-        affected_ac: "AC-015: Form submission flow"
-        suggested_tasks:
-          - "Debug click event handler"
-          - "Fix form validation logic"
-          - "Add regression test for button click"
+    recommendation_settings:
+      load_from: "recommendation-settings.dsl"
       
-      ui_change:
-        ui_components: ["Login form", "Navigation header"]
-        ui_states: ["Loading", "Error", "Success", "Disabled"]
-        interaction_flow: "User enters credentials → Validate → Show loading → Success/Error"
-        responsive_breakpoints: ["Mobile (< 768px)", "Desktop (≥ 768px)"]
-        accessibility: "WCAG 2.1 AA compliance required"
-      
-      performance:
-        failing_metric: "API response time p95 > 500ms"
-        target_value: "< 200ms for p95"
-        measurement_method: "k6 load test with 100 concurrent users"
-        suggested_solutions:
-          - "Add caching layer"
-          - "Optimize database queries"
-          - "Implement pagination"
-      
-      new_feature:
-        functionality: "User profile management system"
-        user_goals: "Users can view and edit their profile information"
-        acceptance_criteria:
-          - "Given user is logged in, When they click profile, Then profile page loads"
-          - "Given profile page, When user edits info, Then changes are saved"
-        technical_components:
-          - "Profile API endpoints"
-          - "Profile UI components"
-          - "Data validation layer"
+    scenario_classification:
 
   flow:
     - action: determine_mode
@@ -310,10 +278,25 @@ claude_dsl:
     
     - if: mode == "recommendation" or mode == "hybrid"
       then:
+        - action: load_recommendation_settings
+          with:
+            source: "${components.recommendation_settings.load_from}"
+          as: rec_settings
+        
+        - action: ask_policy_preference
+          with:
+            prompt: |
+              "Would you like to:
+              1. Use system-wide design policies (recommended)
+              2. Define project-specific settings
+              3. Use system policies with overrides"
+          as: policy_choice
+        
         - action: generate_recommendations
           with:
             scenario: "${scenario}"
-            templates: "${components.recommendation_templates[scenario]}"
+            settings: "${rec_settings}"
+            policy: "${policy_choice}"
             context: "${args.context}"
           as: recommendations
         
