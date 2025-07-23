@@ -1,32 +1,136 @@
 # Design Document
 
-## 1. What to Build
-### 1.1 Core Components
-#### [ComponentName]
-- **Purpose**: [What this component does]
-- **Inputs**: [What data/events it receives]
-- **Outputs**: [What data/events it produces]
-- **Business Logic**: [Core logic this component handles]
+## Overview
+[Brief description of the application including main technology stack and architectural approach]
 
-### 1.2 Data Flow
-1. [User action] → [Component A] → [Data transformation]
-2. [Component A] → [Component B] → [Result]
-3. [Final output] → [User sees what]
+## Architecture
 
-### 1.3 Security Requirements
-- **Authentication**: [How users are verified]
-- **Authorization**: [What users can access]
-- **Data Protection**: [How sensitive data is handled]
-- **Input Validation**: [How inputs are validated]
+### Tech Stack
+- **Framework**: [Main framework and version]
+- **Language**: [Programming language]
+- **UI Library**: [UI components and styling]
+- **State Management**: [State management approach]
+- **Data Persistence**: [Storage solution]
+- **Styling**: [CSS framework/approach]
 
-## 2. Component Interactions
-### 2.1 Interface Definitions
-#### Component A ↔ Component B
-- **Method**: [How they communicate]
-- **Data Format**: [What data is exchanged]
-- **Error Handling**: [How errors are communicated]
+### Project Structure
+```
+src/
+├── [main-directory]/
+│   ├── [file1]
+│   └── [file2]
+├── components/
+│   ├── ui/           # [UI component library]
+│   ├── [Component1]  # [Component description]
+│   └── [Component2]  # [Component description]
+├── lib/
+│   └── [utilities]   # [Utility functions]
+└── types/
+    └── [types]       # [Type definitions]
+```
 
-## 3. Success Criteria
-- [Measurable outcome 1]
-- [Measurable outcome 2]
-- [Performance criteria]
+## Components and Interfaces
+
+### Data Models
+```typescript
+interface [EntityName] {
+  id: string;
+  [property]: [type];  // [description, constraints]
+  [optional]?: [type]; // [description]
+  createdAt: Date;
+  updatedAt: Date;
+}
+```
+
+### Component Design
+
+#### [ComponentName] Component
+- **Responsibility**: [What this component manages]
+- **State**: [What state it holds]
+- **Features**: [Key functionalities]
+
+#### [ComponentName] Component
+- **Responsibility**: [What this component does]
+- **Props**: [What props it receives]
+- **Features**: [Key functionalities]
+
+### UI Components
+- **[Component]**: [Usage description]
+- **[Component]**: [Usage description]
+- **[Component]**: [Usage description]
+
+## Data Model
+
+### [Entity] Entity
+```typescript
+interface [Entity] {
+  id: string;          // [ID format/generation]
+  [field]: [type];     // [constraints, validation rules]
+  [field]?: [type];    // [optional field description]
+  createdAt: Date;     // [timestamp info]
+  updatedAt: Date;     // [timestamp info]
+}
+```
+
+### Storage Schema
+```typescript
+interface [StorageName] {
+  [entities]: [Entity][];
+  version: string; // [versioning strategy]
+}
+```
+
+## Error Handling
+
+### Error Types
+- **[ErrorType]**: [Description and when it occurs]
+- **[ErrorType]**: [Description and when it occurs]
+- **[ErrorType]**: [Description and when it occurs]
+
+### Error Handling Strategy
+- **[Error Category]**: [How it's handled and displayed]
+- **[Error Category]**: [How it's handled and displayed]
+
+## Responsive Design
+
+### Breakpoints
+- **Mobile**: [< breakpoint]
+- **Tablet**: [breakpoint range]
+- **Desktop**: [> breakpoint]
+
+### Layout Strategy
+- **Mobile**: [Layout approach and characteristics]
+- **Tablet**: [Layout approach and characteristics]  
+- **Desktop**: [Layout approach and characteristics]
+
+## Performance Considerations
+
+### Optimization Techniques
+- **[Technique]**: [Description and application]
+- **[Technique]**: [Description and application]
+- **[Technique]**: [Description and application]
+
+### [Storage/Data] Optimization
+- **[Strategy]**: [Description and implementation]
+- **[Strategy]**: [Description and implementation]
+
+## Security Considerations
+
+### [Security Area]
+- **[Measure]**: [Implementation approach]
+- **[Measure]**: [Implementation approach]
+
+### Data Protection
+- **[Protection Method]**: [Implementation details]
+- **[Protection Method]**: [Implementation details]
+
+## Accessibility
+
+### [Standard] Compliance
+- **[Requirement]**: [Implementation approach]
+- **[Requirement]**: [Implementation approach]
+- **[Requirement]**: [Implementation approach]
+
+### Implementation Details
+- **[Feature]**: [Technical implementation]
+- **[Feature]**: [Technical implementation]
