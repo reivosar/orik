@@ -200,6 +200,12 @@ claude_dsl:
         criteria: "${variables.impact_assessment}"
       as: impact_result
     
+    - action: ask_scenario_questions
+      with:
+        scenario: "${scenario}"
+        question_source: "questions.dsl"  # loaded once at startup
+      as: detailed_requirements
+    
     - action: determine_required_documents
       with:
         scenario: "${scenario}"
@@ -213,7 +219,8 @@ claude_dsl:
       with:
         message: |
           "Development scenario: ${scenario}
-          Required: ${doc_plan.required}
+          Requirements gathered: ${detailed_requirements}
+          Required documents: ${doc_plan.required}
           Conditional: ${doc_plan.conditional}
           Skip: ${doc_plan.skip}
           
@@ -229,6 +236,7 @@ claude_dsl:
       with:
         scenario: "${scenario}"
         doc_plan: "${doc_plan}"
+        requirements_input: "${detailed_requirements}"
     
     - action: validate_traceability
       with:
