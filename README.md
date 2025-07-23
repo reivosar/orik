@@ -91,6 +91,15 @@ orik/
 
 ### Scenario Matrix
 
+**Document Types:**
+- **FR** = Functional Requirements (what the system should do)
+- **FS** = Feature Specifications (UI/UX details and user flows)
+- **NFR** = Non-Functional Requirements (performance, security, reliability)
+- **Design** = Technical design and architecture
+- **Tasks** = Implementation tasks with Definition of Done
+- **Tests** = Test specifications and test cases
+- **Trace** = Traceability matrix linking all documents
+
 | Scenario | Questions | FR | FS | NFR | Design | Tasks | Tests | Trace | Time Savings |
 |----------|-----------|----|----|-----|--------|-------|-------|-------|--------------|
 | **New Product** | 25+ | ✅ | ✅ | ⭕ | ✅ | ✅ | ✅ | ✅ | Baseline |
@@ -101,7 +110,7 @@ orik/
 | **Refactor** | 4 | ❌ | ❌ | ❌ | ⭕ | ✅ | ⭕ | 📝 | 70% |
 | **Infrastructure** | 12 | ❌ | ❌ | ✅ | 📝 | ✅ | ✅ | 📝 | 50% |
 
-**Legend:**
+**Actions:**
 - ✅ Create new document
 - 📝 Update existing document  
 - 👁️ Reference only (no changes)
