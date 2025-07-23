@@ -60,32 +60,19 @@ claude_dsl:
         types: "${components.task_types}"
         mandatory: true
     
-    # MANDATORY: Ask clarifying questions for any development task
-    - action: ask
-      with:
-        message: "What are the specific requirements for this task? What exactly should be built/implemented?"
-    
-    - action: confirm
-      with:
-        message: |
-          "Requirements: {{response_to_previous_ask}}
-          
-          Should I proceed with development?"
-    
-    - if: user_response != "yes"
-      then:
-        - action: halt
-          message: "Stopping until requirements are clarified and approved."
-    
+    # MANDATORY: Route development tasks to spec-driven controller
     - if: task_type == "development"
       then:
         - action: load_dsl
-          target: "flow.dsl"
-        - action: load_dsl  
-          target: "checklist.dsl"
-        - action: execute_flow_workflow
-          requirements: "{{response_to_previous_ask}}"
-        # Note: flow.dsl handles scenario classification and document planning
+          target: "spec-driven.dsl"
+        - action: execute_spec_driven_workflow
+        # Note: spec-driven.dsl handles complete development workflow
+    
+    - else:
+      then:
+        - action: handle_non_development_request
+          with:
+            message: "This appears to be a research/analysis task. How can I help?"
     
     - action: present_checklist
       target: components.checklist_basic
