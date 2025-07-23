@@ -43,9 +43,15 @@
 # Design Document
 
 ## 1. アーキテクチャ概要
-- **アプリケーションタイプ**: [Web/CLI/Desktop/API等]
-- **アーキテクチャパターン**: [MVC/Layered/Microservices等]
+- **アプリケーションタイプ**: [Web/CLI/Desktop/API/Library/Mobile/Microservice/Batch等]
+- **アーキテクチャパターン**: [MVC/Layered/Microservices/Event-Driven等]
 - **主要技術スタック**: [使用技術一覧]
+
+### 1.1 アプリケーションタイプ別要件
+LOAD app-types.dsl FOR TYPE-SPECIFIC VALIDATION RULES
+
+### 1.2 セキュリティ要件
+LOAD security-rules.dsl FOR SECURITY REQUIREMENTS BY PRIORITY
 
 ## 2. システム設計
 ### 2.1 ディレクトリ構成
@@ -151,11 +157,15 @@ project/
 - 各ドキュメントは具体的で実装可能な内容か？
 - 曖昧な表現や不明確な仕様はないか？
 - Claudeが理解して実装できる詳細度か？
+- アプリケーションタイプに応じた要件が含まれているか？
+- セキュリティ要件が優先度別に整理されているか？
 
 ### IMPLEMENTATION_QUALITY_CHECK  
 - タスクで定義された成果物が作成されたか？
 - 完了条件がすべて満たされたか？
 - 次のタスクの前提条件が整ったか？
+- APPLY validation-rules.dsl FOR 4-LEVEL VALIDATION
+- APPLY app-types.dsl FOR APPLICATION-SPECIFIC VALIDATION
 
 ## ERROR_RECOVERY
 - 品質チェック失敗時は該当フェーズに戻る
