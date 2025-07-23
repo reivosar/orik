@@ -1,5 +1,5 @@
 claude_dsl:
-  version: "0.2"
+  version: "0.3"
   variables:
     question_priorities:
       critical: ["scenario", "core_functionality", "acceptance_criteria"]
@@ -10,6 +10,11 @@ claude_dsl:
       minimal: "critical"
       standard: ["critical", "important"] 
       comprehensive: ["critical", "important", "detailed"]
+    
+    question_mode:
+      interview: "ask_user_for_answers"
+      recommendation: "provide_suggested_answers"
+      hybrid: "suggest_then_confirm"
 
   components:
     scenario_classification:
@@ -246,7 +251,51 @@ claude_dsl:
           - "What performance issues are being addressed?"
           - "What are the quantitative performance targets?"
 
+  components:
+    recommendation_templates:
+      bug_fix:
+        current_behavior: "Button doesn't respond when clicked"
+        correct_behavior: "Button should submit form per AC-015"
+        affected_ac: "AC-015: Form submission flow"
+        suggested_tasks:
+          - "Debug click event handler"
+          - "Fix form validation logic"
+          - "Add regression test for button click"
+      
+      ui_change:
+        ui_components: ["Login form", "Navigation header"]
+        ui_states: ["Loading", "Error", "Success", "Disabled"]
+        interaction_flow: "User enters credentials → Validate → Show loading → Success/Error"
+        responsive_breakpoints: ["Mobile (< 768px)", "Desktop (≥ 768px)"]
+        accessibility: "WCAG 2.1 AA compliance required"
+      
+      performance:
+        failing_metric: "API response time p95 > 500ms"
+        target_value: "< 200ms for p95"
+        measurement_method: "k6 load test with 100 concurrent users"
+        suggested_solutions:
+          - "Add caching layer"
+          - "Optimize database queries"
+          - "Implement pagination"
+      
+      new_feature:
+        functionality: "User profile management system"
+        user_goals: "Users can view and edit their profile information"
+        acceptance_criteria:
+          - "Given user is logged in, When they click profile, Then profile page loads"
+          - "Given profile page, When user edits info, Then changes are saved"
+        technical_components:
+          - "Profile API endpoints"
+          - "Profile UI components"
+          - "Data validation layer"
+
   flow:
+    - action: determine_mode
+      with:
+        default: "${variables.question_mode.hybrid}"
+        user_preference: "${args.mode}"
+      as: mode
+    
     - action: classify_scenario
       with:
         questions: "${components.scenario_classification.questions}"
@@ -259,11 +308,50 @@ claude_dsl:
         priorities: "${variables.time_constraints}"
       as: question_plan  # {questions: [...], priority: "...", required_fields: [...]}
     
-    - action: ask_questions
-      with:
-        questions: "${question_plan.questions}"
-        priority: "${question_plan.priority}"
-      as: responses
+    - if: mode == "recommendation" or mode == "hybrid"
+      then:
+        - action: generate_recommendations
+          with:
+            scenario: "${scenario}"
+            templates: "${components.recommendation_templates[scenario]}"
+            context: "${args.context}"
+          as: recommendations
+        
+        - action: present_recommendations
+          with:
+            message: |
+              "Based on your ${scenario} scenario, here are my recommendations:
+              
+              ${recommendations}
+              
+              Would you like to:
+              1. Accept these recommendations
+              2. Modify specific items
+              3. Start from scratch with questions"
+          as: user_choice
+    
+    - if: mode == "interview" or user_choice == "3"
+      then:
+        - action: ask_questions
+          with:
+            questions: "${question_plan.questions}"
+            priority: "${question_plan.priority}"
+          as: responses
+    
+    - if: user_choice == "2"
+      then:
+        - action: refine_recommendations
+          with:
+            base: "${recommendations}"
+            questions: "Which items would you like to modify?"
+          as: responses
+    
+    - if: user_choice == "1"
+      then:
+        - action: use_recommendations
+          with:
+            data: "${recommendations}"
+          as: responses
     
     - action: validate_completeness
       with:
