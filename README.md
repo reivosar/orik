@@ -95,7 +95,7 @@ orik/
 | **Bug Fix** | 3 targeted | T + TC + Trace (ref existing) | 75% |
 | **Spec Change** | 15 impact-focused | Update FR/FS/D/T + TC + Trace | 40% |
 | **Refactor** | 4 technical | T + TC + Trace + Notes | 70% |
-| **Infrastructure** | 12 performance | NFR + D + T + TC + Trace | 50% |
+| **Infrastructure/Performance** | 12 performance + NFR | NFR + D + T + TC + Trace | 50% |
 
 ### Workflow Examples
 
@@ -110,6 +110,13 @@ Time: 15 minutes vs 2 hours traditional
 Feature Request → [25 Questions] → Create FR-008 → Create FS-008 → Create D-008 → 
 Create T-046-050 → Create TC-046-050 → Update Trace → Quality Gates → Done
 Time: 90 minutes vs 4 hours traditional
+```
+
+**Infrastructure/Performance Flow:**
+```
+Perf Issue → [12 NFR Questions] → Create NFR-001 → Update D-012 → Create T-051-053 → 
+Create NFTC-001-005 → Update Trace → SLO Validation → Done
+Time: 60 minutes vs 3 hours traditional
 ```
 
 ## Document Templates
