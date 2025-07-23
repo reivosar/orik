@@ -51,15 +51,18 @@ Claude:
 ```
 orik/
 ├── entry-point.dsl              # Entry point & task routing
+├── spec-driven.dsl              # Main development controller (v0.4)
 ├── flow.dsl                     # Core workflow engine (v0.6)
 ├── questions.dsl                # Scenario-based question sets (v0.2)
 ├── checklist.dsl                # Quality gates & validation
+├── document-creation-policy.dsl # Document creation rules & procedures
 └── templates/
     ├── requirements-template.md      # Functional & Non-functional requirements
     ├── feature-spec-template.md      # UI/UX specifications with data models
     ├── design-template.md            # Component architecture & APIs
     ├── tasks-template.md             # Implementation breakdown with DoD
     ├── test-spec-template.md         # Comprehensive testing framework
+    ├── nfr-template.md               # Non-functional requirements with SLO/SLA
     ├── system-design-policy-template.md  # Enterprise governance rules
     └── ci/github-actions-quality-gates.yml  # Automated validation
 ```
