@@ -7,6 +7,7 @@ claude_dsl:
       - fs
       - design
       - tasks
+      - test_spec
       - trace
       - adr
       - sdp
@@ -56,6 +57,7 @@ claude_dsl:
         fs: create
         design: create 
         tasks: create
+        test_spec: create
         trace: create
         adr: note
         sdp: skip
@@ -65,6 +67,7 @@ claude_dsl:
         fs: revise
         design: revise
         tasks: revise
+        test_spec: revise
         trace: update
         adr: note
         sdp: skip
@@ -74,6 +77,7 @@ claude_dsl:
         fs: revise
         design: skip
         tasks: create
+        test_spec: create
         trace: update
         adr: skip
         sdp: skip
@@ -83,6 +87,7 @@ claude_dsl:
         fs: skip
         design: skip
         tasks: create
+        test_spec: create
         trace: update
         adr: skip
         sdp: skip
@@ -92,6 +97,7 @@ claude_dsl:
         fs: revise
         design: revise
         tasks: revise
+        test_spec: revise
         trace: update
         adr: note
         sdp: skip
@@ -101,6 +107,7 @@ claude_dsl:
         fs: skip
         design: note
         tasks: create
+        test_spec: note
         trace: update
         adr: note
         sdp: skip
@@ -111,6 +118,7 @@ claude_dsl:
         fs: skip
         design: revise
         tasks: create
+        test_spec: create
         trace: update
         adr: note
         sdp: skip
