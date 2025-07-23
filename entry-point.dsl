@@ -28,7 +28,7 @@ claude_dsl:
     task_types:
       development:
         condition: "writing/modifying code"
-        load: "development.dsl"
+        load: "spec-driven.dsl"
       non_development:
         condition: "everything else"
         load: null
@@ -46,7 +46,7 @@ claude_dsl:
     - if: not validation_passed
       then:
         action: halt
-        message: "Development validation rules loaded from development.dsl"
+        message: "Development validation rules loaded from spec-driven.dsl"
     - if: task_type == "development"
       then:
         include:
@@ -84,7 +84,7 @@ claude_dsl:
     - if: task_type == "development"
       then:
         - action: load_dsl
-          target: "development.dsl"
+          target: "spec-driven.dsl"
         - action: develop
     
     - action: present_checklist
