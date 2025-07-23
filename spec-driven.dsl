@@ -1,11 +1,11 @@
 # Spec-Driven Development DSL for Claude
-# Claude自身が作成した仕様書を使って実装するためのフレームワーク
+# Framework for Claude to create specifications and implement them
 
 ## CORE_PRINCIPLES
-- Claude自身が読みやすく理解しやすい仕様書を作成
-- 実装に必要な全詳細を含む設計書
-- 検証可能な実装計画
-- 段階的な品質チェック
+- Create specifications that Claude can easily read and understand
+- Include all details necessary for implementation in design documents
+- Create verifiable implementation plans
+- Implement staged quality checks
 
 ## DOCUMENT_TEMPLATES
 
@@ -13,48 +13,48 @@
 ```
 # Requirements Document
 
-## 1. プロジェクト概要
-- **目的**: [1行で目的を記述]
-- **対象ユーザー**: [想定ユーザーを記述]
-- **スコープ**: [プロジェクトの範囲を明確化]
+## 1. Project Overview
+- **Purpose**: [Describe purpose in one line]
+- **Target Users**: [Describe intended users]
+- **Scope**: [Clarify project scope]
 
-## 2. 機能要件
-### 2.1 主要機能
-- [ ] 機能1: [具体的な動作を記述]
-- [ ] 機能2: [具体的な動作を記述]
+## 2. Functional Requirements
+### 2.1 Core Features
+- [ ] Feature 1: [Describe specific behavior]
+- [ ] Feature 2: [Describe specific behavior]
 
-### 2.2 非機能要件
-- **パフォーマンス**: [性能要件]
-- **セキュリティ**: [セキュリティ要件]
-- **可用性**: [可用性要件]
+### 2.2 Non-Functional Requirements
+- **Performance**: [Performance requirements]
+- **Security**: [Security requirements]
+- **Availability**: [Availability requirements]
 
-## 3. 制約条件
-- [技術的制約]
-- [時間的制約]
-- [リソース制約]
+## 3. Constraints
+- [Technical constraints]
+- [Time constraints]
+- [Resource constraints]
 
-## 4. 成功基準
-- [ ] 基準1: [測定可能な基準]
-- [ ] 基準2: [測定可能な基準]
+## 4. Success Criteria
+- [ ] Criterion 1: [Measurable criterion]
+- [ ] Criterion 2: [Measurable criterion]
 ```
 
 ### DESIGN_TEMPLATE  
 ```
 # Design Document
 
-## 1. アーキテクチャ概要
-- **アプリケーションタイプ**: [Web/CLI/Desktop/API/Library/Mobile/Microservice/Batch等]
-- **アーキテクチャパターン**: [MVC/Layered/Microservices/Event-Driven等]
-- **主要技術スタック**: [使用技術一覧]
+## 1. Architecture Overview
+- **Application Type**: [Web/CLI/Desktop/API/Library/Mobile/Microservice/Batch etc.]
+- **Architecture Pattern**: [MVC/Layered/Microservices/Event-Driven etc.]
+- **Tech Stack**: [List of technologies used]
 
-### 1.1 アプリケーションタイプ別要件
-LOAD app-types.dsl FOR TYPE-SPECIFIC VALIDATION RULES
+### 1.1 Application Type Requirements
+[Application-specific requirements based on type]
 
-### 1.2 セキュリティ要件
-LOAD security-rules.dsl FOR SECURITY REQUIREMENTS BY PRIORITY
+### 1.2 Security Requirements
+[Security requirements organized by priority]
 
-## 2. システム設計
-### 2.1 ディレクトリ構成
+## 2. System Design
+### 2.1 Directory Structure
 ```
 project/
 ├── src/
@@ -65,91 +65,91 @@ project/
 └── docs/
 ```
 
-### 2.2 主要コンポーネント
+### 2.2 Core Components
 #### ComponentA
-- **責務**: [コンポーネントの役割]
-- **インターフェース**: [API定義]
-- **依存関係**: [他コンポーネントとの関係]
+- **Responsibility**: [Component role]
+- **Interface**: [API definition]
+- **Dependencies**: [Relationships with other components]
 
-### 2.3 データフロー
-1. [ステップ1の詳細]
-2. [ステップ2の詳細]
-3. [ステップ3の詳細]
+### 2.3 Data Flow
+1. [Step 1 details]
+2. [Step 2 details]
+3. [Step 3 details]
 
-## 3. 実装詳細
-### 3.1 ファイル別実装内容
-- `src/main.js`: [このファイルの実装内容]
-- `src/utils.js`: [このファイルの実装内容]
+## 3. Implementation Details
+### 3.1 File-specific Implementation
+- `src/main.js`: [Implementation content for this file]
+- `src/utils.js`: [Implementation content for this file]
 
-### 3.2 エラーハンドリング戦略
-- [エラー処理方針]
-- [ログ出力方針]
+### 3.2 Error Handling Strategy
+- [Error handling policy]
+- [Logging policy]
 
-## 4. テスト戦略
-- **単体テスト**: [対象と方法]
-- **統合テスト**: [対象と方法]
+## 4. Testing Strategy
+- **Unit Tests**: [Target and method]
+- **Integration Tests**: [Target and method]
 ```
 
 ### TASKS_TEMPLATE
 ```
 # Implementation Tasks
 
-## タスク一覧
+## Task List
 
-### Phase 1: 基盤構築
-- [ ] Task 1.1: プロジェクト初期化
-  - **詳細**: package.json作成、依存関係インストール
-  - **成果物**: `package.json`, `node_modules/`
-  - **所要時間**: 5分
-  - **完了条件**: npm install が正常実行される
+### Phase 1: Foundation Setup
+- [ ] Task 1.1: Project Initialization
+  - **Details**: Create package.json, install dependencies
+  - **Deliverables**: `package.json`, `node_modules/`
+  - **Duration**: 5 minutes
+  - **Completion Criteria**: npm install executes successfully
 
-### Phase 2: 主要機能実装
-- [ ] Task 2.1: [具体的なタスク名]
-  - **詳細**: [実装する内容の詳細]
-  - **ファイル**: [作成・編集するファイル一覧]
-  - **成果物**: [作成される具体的なファイル・機能]
-  - **依存**: [前提となるタスク]
-  - **完了条件**: [テスト可能な完了条件]
+### Phase 2: Core Feature Implementation
+- [ ] Task 2.1: [Specific task name]
+  - **Details**: [Implementation details]
+  - **Files**: [List of files to create/edit]
+  - **Deliverables**: [Specific files/features to be created]
+  - **Dependencies**: [Prerequisite tasks]
+  - **Completion Criteria**: [Testable completion criteria]
 
-## 品質チェックポイント
-### 各Phase完了時チェック
-- [ ] コードの構文チェック完了
-- [ ] 基本動作テスト完了
-- [ ] エラーハンドリング実装完了
+## Quality Checkpoints
+### Phase Completion Checks
+- [ ] Code syntax check completed
+- [ ] Basic functionality test completed
+- [ ] Error handling implementation completed
 
-### 最終チェック
-- [ ] 全機能動作確認完了
-- [ ] パフォーマンステスト完了
-- [ ] セキュリティチェック完了
+### Final Checks
+- [ ] All features verification completed
+- [ ] Performance test completed
+- [ ] Security check completed
 ```
 
 ## CLAUDE_EXECUTION_FLOW
 
 ### PHASE_1_REQUIREMENTS
-1. ユーザーの要求を受取り
-2. REQUIREMENTS_TEMPLATEに従って requirements.md を作成
-3. ユーザーに確認・修正を求める
-4. requirements.md を確定
+1. Receive user requirements
+2. Create requirements.md following REQUIREMENTS_TEMPLATE
+3. Request user confirmation and revision
+4. Finalize requirements.md
 
 ### PHASE_2_DESIGN  
-1. requirements.md を詳細に分析
-2. DESIGN_TEMPLATEに従って design.md を作成
-3. 実装に必要な全詳細を含める
-4. ユーザーに確認・修正を求める
-5. design.md を確定
+1. Analyze requirements.md in detail
+2. Create design.md following DESIGN_TEMPLATE
+3. Include all details necessary for implementation
+4. Request user confirmation and revision
+5. Finalize design.md
 
 ### PHASE_3_TASKS
-1. design.md から具体的なタスクを抽出
-2. TASKS_TEMPLATEに従って tasks.md を作成
-3. 各タスクに詳細な実装指針を含める
-4. 依存関係と順序を明確化
-5. tasks.md を確定
+1. Extract specific tasks from design.md
+2. Create tasks.md following TASKS_TEMPLATE
+3. Include detailed implementation guidelines for each task
+4. Clarify dependencies and order
+5. Finalize tasks.md
 
 ### PHASE_4_IMPLEMENTATION
-1. tasks.md の順序に従って実装開始
-2. 各タスク完了時に品質チェック実行
-3. チェック失敗時は前段階に戻って修正
-4. 全タスク完了まで継続
+1. Start implementation following tasks.md order
+2. Execute quality checks upon completion of each task
+3. Return to previous phase for correction when checks fail
+4. Continue until all tasks are completed
 
 ## QUALITY_CONTROL
 Execute relevant checklist from checklist.dsl at the completion of each phase
