@@ -63,50 +63,96 @@ docs/
 
 ---
 
-## 3. Document Templates & Requirements
+## 3. Document Templates & Requirements by Development Scenario
 
-### 3.1 Required Documents
-- **MUST**: Every FR requires at least one FS
-- **MUST**: Every FS requires corresponding D entries  
-- **MUST**: Every D requires implementation T entries
-- **MUST**: Every T requires TC verification
-- **MUST**: Architectural changes require ADR
+### 3.1 Development Scenario Classification
 
-### 3.2 Document Relationships
-- **1:N**: FR → FS (One requirement can have multiple specs)
-- **N:N**: FS → D (Specs can reference multiple design components)
-- **1:N**: D → T (One design component can have multiple tasks)
-- **1:N**: T → TC (One task can have multiple test cases)
+Development scenarios determine which documents are required:
 
-### 3.3 Mandatory Fields
+| Scenario | Description | Impact Level |
+|----------|-------------|--------------|
+| **New Product** | Complete new product or major feature | High |
+| **Major Feature** | Significant functionality addition | Medium-High |
+| **UI Change** | Interface modifications, copy changes | Low-Medium |
+| **Bug Fix** | Fixing behavior that doesn't match specs | Low |
+| **Spec Change** | Modifying existing requirements/AC | Medium |
+| **Refactor** | Internal optimization, no external changes | Low |
+| **Infra/Performance** | Infrastructure or performance improvements | Medium |
+
+### 3.2 Document Requirements by Scenario
+
+| Scenario | Requirements (FR/AC) | Feature Spec (FS) | Design (D) | Tasks (T) | Trace | ADR | SDP |
+|----------|---------------------|-------------------|------------|-----------|-------|-----|-----|
+| **New Product** | ✅ New | ✅ New | ✅ New | ✅ New | ✅ New | 🔍 Consider | 🔍 Rare |
+| **Major Feature** | ✅ Add/Revise | ✅ Add/Revise | ✅ Add/Revise | ✅ Add/Revise | ✅ Update | 🔍 If needed | ❌ Skip |
+| **UI Change** | 🔍 Minor/Skip | ✅ Revise only | ❌ Skip | ✅ Add tasks | ✅ Update | ❌ Skip | ❌ Skip |
+| **Bug Fix** | ❌ Skip (ref AC) | ❌ Skip | ❌ Skip | ✅ Fix tasks | ✅ Update | ❌ Skip | ❌ Skip |
+| **Spec Change** | ✅ Revise FR/AC | ✅ Revise | ✅ Affected areas | ✅ Revise | ✅ Update | 🔍 Consider | ❌ Skip |
+| **Refactor** | ❌ Skip | ❌ Skip | 🔍 If needed | ✅ Tech debt | ✅ Update | 🔍 Optional | ❌ Skip |
+| **Infra/Performance** | ✅ NFR update | ❌ Skip | ✅ Perf design | ✅ Add tasks | ✅ Update | 🔍 Optional | ❌ Skip |
+
+**Legend**: ✅ Required | 🔍 Conditional | ❌ Skip
+
+### 3.3 Decision Flow for Document Requirements
+
+#### Step 1: Impact Assessment Questions
+1. **User Experience Impact**: Does this change affect user-visible behavior (UI/copy/functionality)?
+2. **Architecture Impact**: Does this change affect internal structure/data/public APIs?
+3. **Scale & Risk**: What is the implementation effort and potential impact of failure?
+4. **Architecture Decision**: Does this involve significant technical choices that need documentation?
+
+#### Step 2: Document Creation Rules
+- **Requirements (FR/AC)**: Required if user experience or core functionality changes
+- **Feature Spec (FS)**: Required if UI/UX specifications need documentation
+- **Design (D)**: Required if architecture, APIs, or data models change
+- **Tasks (T)**: Always required for any implementation work
+- **Traceability**: Always updated to maintain ID relationships
+- **ADR**: Required for significant architectural decisions
+- **SDP**: Only for organization-wide process changes
+
+### 3.4 Mandatory Fields by Document Type
 Each document type must include:
-- **All**: ID, version, owner, linked IDs
+- **All**: ID, version, owner, linked IDs, change rationale
 - **FR/FS**: acceptance criteria with Given-When-Then format
-- **D**: public API specification
-- **T**: DoD (Definition of Done), estimates, dependencies
-- **TC**: verification steps with expected results
+- **D**: public API specification, component relationships
+- **T**: DoD (Definition of Done), estimates, dependencies, scenario classification
+- **TC**: verification steps with expected results, linked FR/AC tags
 
 ---
 
 ## 4. Change Management Process
 
-### 4.1 Change Workflow
-1. **Proposal**: Create issue with change proposal
-2. **Impact Analysis**: Update trace.md to show affected documents
-3. **Review**: Architecture review for D/ADR changes
-4. **Implementation**: Update all linked documents
-5. **Verification**: CI checks pass, traceability maintained
-6. **Approval**: Merge after all gates pass
+### 4.1 Scenario-Aware Change Workflow
+1. **Classification**: Determine development scenario using impact assessment
+2. **Document Planning**: Identify required documents based on scenario matrix
+3. **Impact Analysis**: Update trace.md to show affected documents and relationships
+4. **Stakeholder Review**: Architecture review for D/ADR changes, PO review for FR/FS changes
+5. **Implementation**: Create/update only the documents required by scenario
+6. **Validation**: CI checks pass, traceability maintained for affected documents
+7. **Approval**: Merge after scenario-appropriate gates pass
 
-### 4.2 Version Management
+### 4.2 Efficient Update Strategy
+- **Differential Updates**: Create/update only what changed, not everything
+- **Cascade Logic**: When FR changes → automatically check FS/D dependencies
+- **Skip Logic**: Bug fixes and refactoring can skip FR/FS creation entirely
+- **Reuse Logic**: Reference existing AC for bug fixes instead of duplicating
+
+### 4.3 Version Management
 - **Document Version**: MAJOR.MINOR format
-- **MAJOR**: Breaking changes, ID structure changes
-- **MINOR**: Non-breaking additions, clarifications
-- **Change Log**: Required for all MAJOR versions
+- **MAJOR**: Breaking changes, ID structure changes, scenario classification changes
+- **MINOR**: Non-breaking additions, clarifications, new scenario rules
+- **Change Log**: Required for all MAJOR versions and scenario rule changes
 
-### 4.3 Deprecation Policy
+### 4.4 Automation Hooks
+- **CI Branch Logic**: Different validation rules based on changed document types
+- **Template Generation**: `make new:feature`, `make change:spec FR=012` commands
+- **Auto-trace Update**: Script-generated trace.md from document ID extraction
+- **Notification Rules**: Alert different stakeholders based on document types affected
+
+### 4.5 Deprecation Policy
 - **MUST**: Mark as `[DEPRECATED - {{REASON}} - {{DATE}}]`
 - **MUST**: Keep deprecated items for 2 major versions
+- **MUST**: Update scenario matrices when deprecating document types
 - **SHOULD**: Provide migration path in deprecation notice
 
 ---
