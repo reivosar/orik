@@ -1,13 +1,15 @@
-# orik - Spec-Driven Development Framework
+# CLAUDE.md - DSL Version
 
-## Usage
-Follow spec-driven.dsl for systematic development workflow.
+## MANDATORY Process
 
-## Core Process
-1. Requirements phase: Create requirements.md
-2. Design phase: Create design.md  
-3. Tasks phase: Create tasks.md
-4. Implementation: Execute systematically
+**Start: Read CLAUDE.md / End: Execute checklist.dsl**
 
-## Quality Gates
-Each phase must pass validation before proceeding to next phase.
+**MANDATORY RULES:**
+- Always read CLAUDE.md at task start to confirm latest status
+- Execute all checklist items before proceeding to next step  
+- Ask questions in Japanese, require Japanese responses
+- **Development task definition: Implementation + All validations passed = Development complete**
+- **Development is NOT complete until validation_passed = true**
+- **FORBIDDEN: Reporting to user before development is complete**
+
+Follow entry-point.dsl for complete DSL execution.
