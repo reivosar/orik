@@ -1,66 +1,66 @@
 # Checklist DSL for orik Framework
-# 品質チェックとエラー回復のためのチェックリスト
+# Quality checks and error recovery checklist
 
 ## QUALITY_GATES
 
 ### DOCUMENT_QUALITY_CHECK
-- 各ドキュメントは具体的で実装可能な内容か？
-- 曖昧な表現や不明確な仕様はないか？
-- Claudeが理解して実装できる詳細度か？
-- アプリケーションタイプに応じた要件が含まれているか？
-- セキュリティ要件が優先度別に整理されているか？
+- Are documents specific and implementable?
+- Are there no ambiguous or unclear specifications?
+- Is the detail level sufficient for Claude to understand and implement?
+- Are application type-specific requirements included?
+- Are security requirements organized by priority?
 
 ### IMPLEMENTATION_QUALITY_CHECK  
-- タスクで定義された成果物が作成されたか？
-- 完了条件がすべて満たされたか？
-- 次のタスクの前提条件が整ったか？
-- 構文チェックが完了したか？
-- 基本動作テストが完了したか？
-- エラーハンドリングが実装されたか？
+- Are all defined deliverables created?
+- Are all completion conditions satisfied?
+- Are prerequisites for next tasks ready?
+- Is syntax checking completed?
+- Is basic functionality testing completed?
+- Is error handling implemented?
 
 ### PHASE_COMPLETION_CHECK
 #### Requirements Phase
-- [ ] 機能要件が明確に定義されている
-- [ ] 非機能要件が含まれている
-- [ ] 成功基準が測定可能である
-- [ ] 制約条件が明記されている
+- [ ] Functional requirements are clearly defined
+- [ ] Non-functional requirements are included
+- [ ] Success criteria are measurable
+- [ ] Constraints are documented
 
 #### Design Phase  
-- [ ] アーキテクチャが明確である
-- [ ] ファイル構成が定義されている
-- [ ] データフローが説明されている
-- [ ] エラーハンドリング戦略がある
-- [ ] テスト戦略が含まれている
+- [ ] Architecture is clear
+- [ ] File structure is defined
+- [ ] Data flow is explained
+- [ ] Error handling strategy exists
+- [ ] Testing strategy is included
 
 #### Tasks Phase
-- [ ] タスクが具体的で実行可能である
-- [ ] 各タスクに完了条件がある
-- [ ] 依存関係が明確である
-- [ ] 所要時間が見積もられている
+- [ ] Tasks are specific and executable
+- [ ] Each task has completion criteria
+- [ ] Dependencies are clear
+- [ ] Time estimates are provided
 
 #### Implementation Phase
-- [ ] 全タスクが完了している
-- [ ] コードの構文チェック完了
-- [ ] 基本動作テスト完了
-- [ ] エラーハンドリング実装完了
-- [ ] 全機能動作確認完了
+- [ ] All tasks are completed
+- [ ] Code syntax check completed
+- [ ] Basic functionality test completed
+- [ ] Error handling implementation completed
+- [ ] All features verification completed
 
 ## ERROR_RECOVERY
 
 ### RECOVERY_ACTIONS
-- 品質チェック失敗時は該当フェーズに戻る
-- ドキュメント修正後は後続フェーズを再実行
-- 実装エラー時はtasks.mdの見直しから開始
+- Return to relevant phase when quality check fails
+- Re-execute subsequent phases after document revision
+- Start from tasks.md review when implementation errors occur
 
 ### ROLLBACK_CONDITIONS
-- Requirements不備 → Requirements Phase に戻る
-- Design不備 → Design Phase に戻る
-- Tasks不備 → Tasks Phase に戻る
-- Implementation失敗 → 該当タスクから再開
+- Requirements issues → Return to Requirements Phase
+- Design issues → Return to Design Phase  
+- Tasks issues → Return to Tasks Phase
+- Implementation failure → Resume from relevant task
 
 ## FINAL_CHECKLIST
-- [ ] プロジェクト要件が満たされている
-- [ ] 全機能が正常に動作する
-- [ ] エラーハンドリングが適切である
-- [ ] ドキュメントが完成している
-- [ ] テストが通過している
+- [ ] Project requirements are satisfied
+- [ ] All features work correctly
+- [ ] Error handling is appropriate
+- [ ] Documentation is completed
+- [ ] Tests are passing

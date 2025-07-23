@@ -152,4 +152,4 @@ project/
 4. 全タスク完了まで継続
 
 ## QUALITY_CONTROL
-各フェーズ完了時に checklist.dsl の該当チェックリストを実行する
+Execute relevant checklist from checklist.dsl at the completion of each phase
