@@ -1,136 +1,87 @@
 # Design Document
 
-## Overview
-[Brief description of the application including main technology stack and architectural approach]
+## 0. Meta
+- Linked Requirements: v0.1
+- Doc Version: 0.1 ({{DATE}})
+- **D-ID Rules**: D-xxx IDs cannot be reused, mark as Deprecated instead of deletion
 
-## Architecture
+## 1. Overview
+[Tech stack & architectural approach in 2-3 sentences]
 
-### Tech Stack
-- **Framework**: [Main framework and version]
-- **Language**: [Programming language]
-- **UI Library**: [UI components and styling]
-- **State Management**: [State management approach]
-- **Data Persistence**: [Storage solution]
-- **Styling**: [CSS framework/approach]
+## 2. Architecture / Data Flow
+[Main processing loop and state update flow in one paragraph or pseudocode]
+[External dependencies (API/storage) if any]
 
-### Project Structure
-```
-src/
-├── [main-directory]/
-│   ├── [file1]
-│   └── [file2]
-├── components/
-│   ├── ui/           # [UI component library]
-│   ├── [Component1]  # [Component description]
-│   └── [Component2]  # [Component description]
-├── lib/
-│   └── [utilities]   # [Utility functions]
-└── types/
-    └── [types]       # [Type definitions]
-```
+### State Transitions (if applicable)
+[Main state flow: INIT → READY → RUNNING/PAUSED → RESET → ...]
 
-## Components and Interfaces
+## 3. Components (with D-ID)
 
-### Data Models
-```typescript
-interface [EntityName] {
-  id: string;
-  [property]: [type];  // [description, constraints]
-  [optional]?: [type]; // [description]
-  createdAt: Date;
-  updatedAt: Date;
-}
-```
-
-### Component Design
-
-#### [ComponentName] Component
+### D-001: [ComponentName] (FR-001, FR-004)
 - **Responsibility**: [What this component manages]
-- **State**: [What state it holds]
-- **Features**: [Key functionalities]
+- **Public API**:
+  - `method(arg: Type): ReturnType`
+  - `anotherMethod(param: Type): void`
+- **Depends on**: [modules/libraries]
 
-#### [ComponentName] Component
+### D-002: [ComponentName] (FR-002)
 - **Responsibility**: [What this component does]
-- **Props**: [What props it receives]
-- **Features**: [Key functionalities]
+- **Public API**:
+  - `publicMethod(input: Type): OutputType`
+  - `eventHandler(): void`
+- **Depends on**: [dependencies]
 
-### UI Components
-- **[Component]**: [Usage description]
-- **[Component]**: [Usage description]
-- **[Component]**: [Usage description]
+[Continue with D-003, D-004, etc.]
 
-## Data Model
-
-### [Entity] Entity
+## 4. Data Models
 ```typescript
-interface [Entity] {
-  id: string;          // [ID format/generation]
-  [field]: [type];     // [constraints, validation rules]
-  [field]?: [type];    // [optional field description]
-  createdAt: Date;     // [timestamp info]
-  updatedAt: Date;     // [timestamp info]
+interface Entity {
+  id: string; // UUID
+  [property]: [type]; // [constraints]
+  [optional]?: [type]; // [description]
+}
+
+interface AnotherEntity {
+  // [Required types/schemas only]
 }
 ```
 
-### Storage Schema
-```typescript
-interface [StorageName] {
-  [entities]: [Entity][];
-  version: string; // [versioning strategy]
-}
+## 5. Event → Handler Map
+
+| Event / Trigger | Handler / Module |
+|----------------|------------------|
+| Click [element] | ComponentName.method() |
+| Slider change (speed) | SimulationController.setSpeed() |
+| Window resize | LayoutManager.onResize() |
+| [event] | [handler] |
+
+## 6. Error / Fallback Policy
+- **[Failure case]** → [handling approach]
+- **WebGL not supported** → [fallback display content]
+- **Network timeout** → [retry/offline behavior]
+- **[error scenario]** → [recovery strategy]
+
+### Cleanup / Dispose Policy
+- **Event listeners**: [timing and method for removal]
+- **Memory cleanup**: [policy for releasing WebGL/large objects]
+- **Timers/intervals**: [stopping and cleanup timing]
+
+## 7. Test Hooks / Strategy
+- **Unit**: [calculation/logic modules to test]
+- **Integration**: [main flow components]
+- **E2E**: [key user scenarios]
+
+## 8. Open Questions / TODO
+- [Unresolved decisions]
+- [Implementation TODOs]
+- [Research items]
+
+**Note**: Open Questions should be migrated to GitHub Issues
+
+---
+
+## CI/Lint Regular Expressions (Reference)
 ```
-
-## Error Handling
-
-### Error Types
-- **[ErrorType]**: [Description and when it occurs]
-- **[ErrorType]**: [Description and when it occurs]
-- **[ErrorType]**: [Description and when it occurs]
-
-### Error Handling Strategy
-- **[Error Category]**: [How it's handled and displayed]
-- **[Error Category]**: [How it's handled and displayed]
-
-## Responsive Design
-
-### Breakpoints
-- **Mobile**: [< breakpoint]
-- **Tablet**: [breakpoint range]
-- **Desktop**: [> breakpoint]
-
-### Layout Strategy
-- **Mobile**: [Layout approach and characteristics]
-- **Tablet**: [Layout approach and characteristics]  
-- **Desktop**: [Layout approach and characteristics]
-
-## Performance Considerations
-
-### Optimization Techniques
-- **[Technique]**: [Description and application]
-- **[Technique]**: [Description and application]
-- **[Technique]**: [Description and application]
-
-### [Storage/Data] Optimization
-- **[Strategy]**: [Description and implementation]
-- **[Strategy]**: [Description and implementation]
-
-## Security Considerations
-
-### [Security Area]
-- **[Measure]**: [Implementation approach]
-- **[Measure]**: [Implementation approach]
-
-### Data Protection
-- **[Protection Method]**: [Implementation details]
-- **[Protection Method]**: [Implementation details]
-
-## Accessibility
-
-### [Standard] Compliance
-- **[Requirement]**: [Implementation approach]
-- **[Requirement]**: [Implementation approach]
-- **[Requirement]**: [Implementation approach]
-
-### Implementation Details
-- **[Feature]**: [Technical implementation]
-- **[Feature]**: [Technical implementation]
+# D-ID:   ^### D-\d{3}:
+# API line: ^\s+- `\w+\(.*\): .+`
+```

@@ -1,0 +1,613 @@
+# GitHub Actions Quality Gates Pipeline
+# This workflow implements all quality gates defined in quality-gates-template.md
+name: Quality Gates
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+  workflow_dispatch:
+
+env:
+  NODE_VERSION: '18'
+  PYTHON_VERSION: '3.11'
+  
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # ===========================================
+  # DOCUMENT QUALITY GATES
+  # ===========================================
+  document-validation:
+    name: 📋 Document Validation
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Validate document schemas
+        run: |
+          # Install AJV CLI for JSON Schema validation
+          npm install -g ajv-cli
+          
+          # Validate each document type
+          echo "🔍 Validating Requirements documents..."
+          ajv validate -s schemas/requirements.schema.json -d "docs/requirements/*.md" || exit 1
+          
+          echo "🔍 Validating Feature Specs..."
+          ajv validate -s schemas/feature-specs.schema.json -d "docs/specs/*.md" || exit 1
+          
+          echo "🔍 Validating Design documents..."
+          ajv validate -s schemas/design.schema.json -d "docs/design/*.md" || exit 1
+          
+          echo "🔍 Validating ADR documents..."
+          ajv validate -s schemas/adr.schema.json -d "docs/decisions/*.md" || exit 1
+
+      - name: Validate traceability matrix
+        run: |
+          echo "🔗 Validating traceability matrix..."
+          python scripts/validate-traceability.py docs/trace.md
+
+      - name: Check document quality
+        run: |
+          # Spelling check
+          echo "📝 Checking spelling..."
+          npx cspell "docs/**/*.md"
+          
+          # Link validation
+          echo "🔗 Validating links..."
+          npx markdown-link-check docs/**/*.md
+          
+          # ID format validation
+          echo "🆔 Validating ID formats..."
+          python scripts/validate-ids.py docs/
+
+      - name: Generate documentation report
+        if: always()
+        run: |
+          echo "📊 Generating documentation quality report..."
+          python scripts/generate-doc-report.py > doc-quality-report.md
+
+      - name: Upload documentation report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: documentation-report
+          path: doc-quality-report.md
+
+  # ===========================================
+  # CODE QUALITY GATES
+  # ===========================================
+  code-quality:
+    name: 🔍 Code Quality
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint JavaScript/TypeScript
+        run: |
+          echo "🔍 Running ESLint..."
+          npx eslint src/ --ext .ts,.tsx,.js,.jsx --format=json --output-file eslint-report.json
+          npx eslint src/ --ext .ts,.tsx,.js,.jsx
+
+      - name: Check code formatting
+        run: |
+          echo "💅 Checking code formatting..."
+          npx prettier --check src/
+
+      - name: TypeScript type checking
+        run: |
+          echo "🔒 Running TypeScript type checking..."
+          npx tsc --noEmit --strict
+
+      - name: Code complexity analysis
+        run: |
+          echo "📊 Analyzing code complexity..."
+          npx complexity-report src/ --threshold 10 || echo "⚠️ High complexity detected"
+
+      - name: Detect code duplication
+        run: |
+          echo "🔍 Detecting code duplication..."
+          npx jscpd src/ --threshold 3 --reporters json --output reports/
+        continue-on-error: true
+
+      - name: Upload code quality reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: code-quality-reports
+          path: |
+            eslint-report.json
+            reports/
+
+  # ===========================================
+  # TESTING QUALITY GATES
+  # ===========================================
+  test-coverage:
+    name: 🧪 Test Coverage
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run unit tests with coverage
+        run: |
+          echo "🧪 Running unit tests with coverage..."
+          npm run test:coverage
+        env:
+          CI: true
+
+      - name: Validate FR/AC test tags
+        run: |
+          echo "🏷️ Validating FR/AC tags in tests..."
+          python scripts/validate-test-tags.py src/
+
+      - name: Check coverage thresholds
+        run: |
+          echo "📊 Checking coverage thresholds..."
+          # Fail if coverage is below 90%
+          node scripts/check-coverage-threshold.js coverage/coverage-summary.json 90
+
+      - name: Upload coverage reports
+        uses: codecov/codecov-action@v3
+        with:
+          file: ./coverage/lcov.info
+          flags: unittests
+          name: codecov-umbrella
+
+      - name: Comment coverage on PR
+        if: github.event_name == 'pull_request'
+        uses: romeovs/lcov-reporter-action@v0.3.1
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          lcov-file: ./coverage/lcov.info
+
+  integration-tests:
+    name: 🔗 Integration Tests
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_PASSWORD: postgres
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+      
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run integration tests
+        run: |
+          echo "🔗 Running integration tests..."
+          npm run test:integration
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/test_db
+
+      - name: Upload integration test reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: integration-test-reports
+          path: reports/integration/
+
+  e2e-tests:
+    name: 🎭 E2E Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build application
+        run: npm run build
+
+      - name: Start application
+        run: |
+          npm run start &
+          sleep 10
+          curl -f http://localhost:3000/health || exit 1
+
+      - name: Run Cypress E2E tests
+        uses: cypress-io/github-action@v6
+        with:
+          wait-on: 'http://localhost:3000'
+          wait-on-timeout: 60
+          config: baseUrl=http://localhost:3000
+
+      - name: Upload E2E test artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cypress-screenshots
+          path: cypress/screenshots
+
+  # ===========================================
+  # SECURITY QUALITY GATES
+  # ===========================================
+  security-scan:
+    name: 🔒 Security Scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run dependency vulnerability scan
+        run: |
+          echo "🔍 Scanning for vulnerable dependencies..."
+          npm audit --audit-level=moderate
+
+      - name: Run Semgrep SAST scan
+        uses: returntocorp/semgrep-action@v1
+        with:
+          config: >-
+            p/security-audit
+            p/secrets
+            p/owasp-top-ten
+
+      - name: Detect secrets
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: License compliance check
+        run: |
+          echo "📋 Checking license compliance..."
+          npx license-checker --onlyAllow "MIT;Apache-2.0;BSD-3-Clause;ISC" --excludePrivatePackages
+
+      - name: Upload security reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: security-reports
+          path: |
+            semgrep-results.json
+            gitleaks-report.json
+
+  # ===========================================
+  # PERFORMANCE QUALITY GATES
+  # ===========================================
+  performance-test:
+    name: ⚡ Performance Test
+    runs-on: ubuntu-latest
+    needs: [code-quality]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build application
+        run: |
+          echo "🏗️ Building application..."
+          npm run build
+
+      - name: Analyze bundle size
+        run: |
+          echo "📦 Analyzing bundle size..."
+          npx webpack-bundle-analyzer dist/ --report --mode static --no-open
+          
+          # Check if bundle size exceeds threshold
+          node scripts/check-bundle-size.js dist/ 2048 # 2MB limit
+
+      - name: Start application for Lighthouse
+        run: |
+          npm run start &
+          sleep 10
+
+      - name: Run Lighthouse CI
+        uses: treosh/lighthouse-ci-action@v10
+        with:
+          configPath: './.lighthouserc.js'
+          uploadArtifacts: true
+          temporaryPublicStorage: true
+
+      - name: Load testing with k6
+        uses: grafana/k6-action@v0.3.1
+        with:
+          filename: performance-tests/load-test.js
+        env:
+          BASE_URL: http://localhost:3000
+
+      - name: Upload performance reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: performance-reports
+          path: |
+            lighthouse-report.html
+            bundle-analyzer-report.html
+
+  # ===========================================
+  # ACCESSIBILITY QUALITY GATES
+  # ===========================================
+  accessibility-test:
+    name: ♿ Accessibility Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build and start application
+        run: |
+          npm run build
+          npm run start &
+          sleep 10
+
+      - name: Run axe accessibility tests
+        run: |
+          echo "♿ Running axe accessibility tests..."
+          npm run test:a11y
+
+      - name: Run Pa11y accessibility audit
+        run: |
+          echo "🔍 Running Pa11y audit..."
+          npx pa11y http://localhost:3000 --reporter json > pa11y-report.json
+          npx pa11y http://localhost:3000
+
+      - name: Cypress accessibility tests
+        uses: cypress-io/github-action@v6
+        with:
+          wait-on: 'http://localhost:3000'
+          spec: 'cypress/accessibility/*.spec.js'
+
+      - name: Upload accessibility reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: accessibility-reports
+          path: |
+            pa11y-report.json
+            cypress/accessibility-reports/
+
+  # ===========================================
+  # BUILD AND DEPLOYMENT PREPARATION
+  # ===========================================
+  build:
+    name: 🏗️ Build
+    runs-on: ubuntu-latest
+    needs: [code-quality, test-coverage]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build application
+        run: |
+          echo "🏗️ Building application..."
+          npm run build
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-artifacts
+          path: dist/
+
+  # ===========================================
+  # QUALITY GATE SUMMARY
+  # ===========================================
+  quality-gate-summary:
+    name: 📊 Quality Gate Summary
+    runs-on: ubuntu-latest
+    needs: [
+      document-validation,
+      code-quality,
+      test-coverage,
+      integration-tests,
+      e2e-tests,
+      security-scan,
+      performance-test,
+      accessibility-test,
+      build
+    ]
+    if: always()
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+
+      - name: Generate quality report
+        run: |
+          echo "📊 Generating comprehensive quality report..."
+          
+          # Create summary report
+          cat > quality-summary.md << 'EOF'
+          # Quality Gates Summary
+          
+          ## 📋 Document Validation
+          - Schema validation: ${{ needs.document-validation.result }}
+          - Traceability check: ${{ needs.document-validation.result }}
+          
+          ## 🔍 Code Quality  
+          - Linting: ${{ needs.code-quality.result }}
+          - Type checking: ${{ needs.code-quality.result }}
+          - Formatting: ${{ needs.code-quality.result }}
+          
+          ## 🧪 Testing
+          - Unit tests: ${{ needs.test-coverage.result }}
+          - Integration tests: ${{ needs.integration-tests.result }}
+          - E2E tests: ${{ needs.e2e-tests.result }}
+          
+          ## 🔒 Security
+          - Vulnerability scan: ${{ needs.security-scan.result }}
+          - Secret detection: ${{ needs.security-scan.result }}
+          - License compliance: ${{ needs.security-scan.result }}
+          
+          ## ⚡ Performance
+          - Bundle analysis: ${{ needs.performance-test.result }}
+          - Lighthouse score: ${{ needs.performance-test.result }}
+          - Load testing: ${{ needs.performance-test.result }}
+          
+          ## ♿ Accessibility
+          - axe tests: ${{ needs.accessibility-test.result }}
+          - Pa11y audit: ${{ needs.accessibility-test.result }}
+          - Keyboard navigation: ${{ needs.accessibility-test.result }}
+          
+          ## 🏗️ Build
+          - Application build: ${{ needs.build.result }}
+          
+          ## Overall Status
+          All required quality gates: ${{ job.status }}
+          EOF
+
+      - name: Comment quality summary on PR
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const summary = fs.readFileSync('quality-summary.md', 'utf8');
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: summary
+            });
+
+      - name: Set job status
+        run: |
+          if [[ "${{ needs.document-validation.result }}" == "failure" ]] || \
+             [[ "${{ needs.code-quality.result }}" == "failure" ]] || \
+             [[ "${{ needs.test-coverage.result }}" == "failure" ]] || \
+             [[ "${{ needs.security-scan.result }}" == "failure" ]] || \
+             [[ "${{ needs.accessibility-test.result }}" == "failure" ]] || \
+             [[ "${{ needs.build.result }}" == "failure" ]]; then
+            echo "❌ One or more blocking quality gates failed"
+            exit 1
+          else
+            echo "✅ All required quality gates passed"
+          fi
+
+  # ===========================================
+  # STAGING DEPLOYMENT (on success)
+  # ===========================================
+  deploy-staging:
+    name: 🚀 Deploy to Staging
+    runs-on: ubuntu-latest
+    needs: [quality-gate-summary]
+    if: github.ref == 'refs/heads/develop' && success()
+    environment: staging
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: build-artifacts
+          path: dist/
+
+      - name: Deploy to staging
+        run: |
+          echo "🚀 Deploying to staging environment..."
+          # Add your deployment commands here
+          # Example: AWS, Azure, GCP, Kubernetes, etc.
+
+      - name: Run smoke tests
+        run: |
+          echo "💨 Running smoke tests on staging..."
+          sleep 30 # Wait for deployment
+          npm run test:smoke -- --baseUrl=https://staging.example.com
+
+      - name: Notify deployment
+        if: always()
+        run: |
+          echo "📢 Notifying team of staging deployment status: ${{ job.status }}"
+          # Add notification logic (Slack, email, etc.)
+
+# ===========================================
+# REUSABLE WORKFLOWS AND TEMPLATES
+# ===========================================
+# This workflow can be extended with:
+# 1. Multi-environment deployments
+# 2. Database migration checks
+# 3. API contract testing
+# 4. Visual regression testing
+# 5. Infrastructure as Code validation
+# 6. Monitoring and alerting setup
