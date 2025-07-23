@@ -42,69 +42,80 @@
 ```
 # Design Document
 
-## 1. Architecture Overview
-- **Application Type**: [Web/CLI/Desktop/API/Library/Mobile/Microservice/Batch etc.]
-- **Architecture Pattern**: [MVC/Layered/Microservices/Event-Driven etc.]
-- **Tech Stack**: [List of technologies used]
+## 1. What to Build
+### 1.1 Core Components
+#### [ComponentName]
+- **Purpose**: [What this component does]
+- **Inputs**: [What data/events it receives]
+- **Outputs**: [What data/events it produces]
+- **Business Logic**: [Core logic this component handles]
 
-### 1.1 Application Type Requirements
-[Application-specific requirements based on type]
+### 1.2 Data Flow
+1. [User action] → [Component A] → [Data transformation]
+2. [Component A] → [Component B] → [Result]
+3. [Final output] → [User sees what]
 
-### 1.2 Security Requirements
-[Security requirements organized by priority]
+### 1.3 Security Requirements
+- **Authentication**: [How users are verified]
+- **Authorization**: [What users can access]
+- **Data Protection**: [How sensitive data is handled]
+- **Input Validation**: [How inputs are validated]
 
-## 2. System Design
-### 2.1 Directory Structure
-```
-project/
-├── src/
-│   ├── components/
-│   ├── services/
-│   └── utils/
-├── tests/
-└── docs/
-```
+## 2. Component Interactions
+### 2.1 Interface Definitions
+#### Component A ↔ Component B
+- **Method**: [How they communicate]
+- **Data Format**: [What data is exchanged]
+- **Error Handling**: [How errors are communicated]
 
-### 2.2 Core Components
-#### ComponentA
-- **Responsibility**: [Component role]
-- **Interface**: [API definition]
-- **Dependencies**: [Relationships with other components]
-
-### 2.3 Data Flow
-1. [Step 1 details]
-2. [Step 2 details]
-3. [Step 3 details]
-
-## 3. Implementation Details
-### 3.1 File-specific Implementation
-- `src/main.js`: [Implementation content for this file]
-- `src/utils.js`: [Implementation content for this file]
-
-
+## 3. Success Criteria
+- [Measurable outcome 1]
+- [Measurable outcome 2]
+- [Performance criteria]
 ```
 
 ### TASKS_TEMPLATE
 ```
-# Implementation Tasks
+# Implementation Plan
 
-## Task List
+## Development Tasks
 
-### Phase 1: Foundation Setup
-- [ ] Task 1.1: Project Initialization
-  - **Details**: Create package.json, install dependencies
-  - **Deliverables**: `package.json`, `node_modules/`
-  - **Duration**: 5 minutes
-  - **Completion Criteria**: npm install executes successfully
+### Setup Phase
+- [ ] Task S1: Project Initialization
+  - **What**: Set up project structure and dependencies
+  - **Files to Create**: package.json, .gitignore, README.md
+  - **Dependencies**: None
+  - **Done When**: Project builds without errors
 
-### Phase 2: Core Feature Implementation
-- [ ] Task 2.1: [Specific task name]
-  - **Details**: [Implementation details]
-  - **Files**: [List of files to create/edit]
-  - **Deliverables**: [Specific files/features to be created]
-  - **Dependencies**: [Prerequisite tasks]
-  - **Completion Criteria**: [Testable completion criteria]
+### Core Implementation Phase
+- [ ] Task C1: [Component Name] Implementation
+  - **What**: Build [specific functionality]
+  - **Files to Create**: [list specific files]
+  - **Files to Modify**: [list files to edit]
+  - **Dependencies**: Task S1
+  - **Done When**: [specific testable criteria]
 
+- [ ] Task C2: [Integration Task]
+  - **What**: Connect [Component A] with [Component B]
+  - **Files to Modify**: [integration files]
+  - **Dependencies**: Task C1
+  - **Done When**: [end-to-end flow works]
+
+### Verification Phase
+- [ ] Task V1: Testing Implementation
+  - **What**: Verify all requirements are met
+  - **Files to Create**: test files
+  - **Dependencies**: All C tasks
+  - **Done When**: All tests pass and requirements satisfied
+
+## Implementation Order
+1. Setup Phase (parallel tasks allowed)
+2. Core Implementation Phase (follow dependencies)
+3. Verification Phase
+
+## Risk Mitigation
+- [Potential risk 1] → [mitigation strategy]
+- [Potential risk 2] → [mitigation strategy]
 ```
 
 ## CLAUDE_EXECUTION_FLOW
