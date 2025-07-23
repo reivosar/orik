@@ -90,15 +90,23 @@ orik/
 ## Development Scenarios
 
 ### Scenario Matrix
-| Scenario | Questions | Documents Created | Time Savings |
-|----------|-----------|-------------------|--------------|
-| **New Product** | 25+ comprehensive | FR + FS + D + T + TC + Trace | Baseline |
-| **Major Feature** | 18 focused | Update FR/FS/D/T + TC + Trace | 30% |
-| **UI Change** | 8 UI-specific | FS + T + TC + Trace | 60% |
-| **Bug Fix** | 3 targeted | T + TC + Trace (ref existing) | 75% |
-| **Spec Change** | 15 impact-focused | Update FR/FS/D/T + TC + Trace | 40% |
-| **Refactor** | 4 technical | T + TC + Trace + Notes | 70% |
-| **Infrastructure/Performance** | 12 performance + NFR | NFR + D + T + TC + Trace | 50% |
+
+| Scenario | Questions | FR | FS | NFR | Design | Tasks | Tests | Trace | Time Savings |
+|----------|-----------|----|----|-----|--------|-------|-------|-------|--------------|
+| **New Product** | 25+ | ✅ | ✅ | ⭕ | ✅ | ✅ | ✅ | ✅ | Baseline |
+| **Major Feature** | 18 | 📝 | 📝 | ⭕ | 📝 | 📝 | 📝 | 📝 | 30% |
+| **UI Change** | 8 | 📝 | 📝 | ❌ | ❌ | ✅ | ✅ | 📝 | 60% |
+| **Bug Fix** | 3 | 👁️ | ❌ | ❌ | ❌ | ✅ | ✅ | 📝 | 75% |
+| **Spec Change** | 15 | 📝 | 📝 | ⭕ | 📝 | 📝 | 📝 | 📝 | 40% |
+| **Refactor** | 4 | ❌ | ❌ | ❌ | ⭕ | ✅ | ⭕ | 📝 | 70% |
+| **Infrastructure** | 12 | ❌ | ❌ | ✅ | 📝 | ✅ | ✅ | 📝 | 50% |
+
+**Legend:**
+- ✅ Create new document
+- 📝 Update existing document  
+- 👁️ Reference only (no changes)
+- ⭕ Optional (create if needed)
+- ❌ Skip (not required)
 
 ### Workflow Examples
 
