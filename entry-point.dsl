@@ -27,10 +27,10 @@ claude_dsl:
     
     task_types:
       development:
-        condition: "writing/modifying code"
-        load: "spec-driven.dsl"
+        condition: "writing/modifying code or documentation"
+        scenarios: ["new_product", "major_feature", "ui_change", "bug_fix", "spec_change", "refactor", "infra_perf"]
       non_development:
-        condition: "everything else"
+        condition: "research, analysis, questions only"
         load: null
     
     checklist_basic: "${variables.checklist_questions}"
@@ -60,72 +60,32 @@ claude_dsl:
         types: "${components.task_types}"
         mandatory: true
     
-    # MANDATORY: Classify development scenario BEFORE asking requirements
-    - action: classify_development_scenario
-      with:
-        message: |
-          "What type of development work is this?
-          1. New product/major feature development
-          2. Medium-scale feature addition
-          3. Small UI changes/copy updates
-          4. Bug fixes (behavior not matching specs)
-          5. Specification changes (modifying AC)
-          6. Refactoring/internal optimization only
-          7. Infrastructure/performance improvements"
-    
-    - action: assess_impact
-      with:
-        message: |
-          "Impact Assessment:
-          - Does user experience change? (UI/copy/functionality)
-          - Does internal structure/data/public API change?
-          - Are new tasks required?
-          - Does this involve important architectural decisions?"
-    
-    - action: determine_required_documents
-      with:
-        scenario: "{{development_scenario}}"
-        message: |
-          "Based on scenario '{{development_scenario}}', required documents:
-          {{required_documents_list}}
-          
-          This will be more efficient than creating all documents."
-    
-    # MANDATORY: Ask clarifying questions BASED ON scenario
+    # MANDATORY: Ask clarifying questions for any development task
     - action: ask
       with:
-        message: |
-          "Scenario: {{development_scenario}}
-          Required documents: {{required_documents_list}}
-          
-          What are the specific requirements for this {{development_scenario}}? 
-          What exactly should be built/implemented?"
+        message: "What are the specific requirements for this task? What exactly should be built/implemented?"
     
     - action: confirm
       with:
         message: |
-          "Scenario: {{development_scenario}}
-          Document plan: {{required_documents_list}}
-          Requirements: {{response_to_previous_ask}}
+          "Requirements: {{response_to_previous_ask}}
           
-          Should I proceed with this plan?"
+          Should I proceed with development?"
     
     - if: user_response != "yes"
       then:
         - action: halt
-          message: "Stopping until scenario classification and requirements are approved."
+          message: "Stopping until requirements are clarified and approved."
     
     - if: task_type == "development"
       then:
         - action: load_dsl
-          target: "spec-driven.dsl"
-        - action: load_dsl
           target: "flow.dsl"
-        - action: load_dsl
+        - action: load_dsl  
           target: "checklist.dsl"
-        - action: develop_with_scenario
-          scenario: "{{development_scenario}}"
-          required_docs: "{{required_documents_list}}"
+        - action: execute_flow_workflow
+          requirements: "{{response_to_previous_ask}}"
+        # Note: flow.dsl handles scenario classification and document planning
     
     - action: present_checklist
       target: components.checklist_basic
