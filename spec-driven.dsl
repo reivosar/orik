@@ -151,23 +151,5 @@ project/
 3. チェック失敗時は前段階に戻って修正
 4. 全タスク完了まで継続
 
-## QUALITY_GATES
-
-### DOCUMENT_QUALITY_CHECK
-- 各ドキュメントは具体的で実装可能な内容か？
-- 曖昧な表現や不明確な仕様はないか？
-- Claudeが理解して実装できる詳細度か？
-- アプリケーションタイプに応じた要件が含まれているか？
-- セキュリティ要件が優先度別に整理されているか？
-
-### IMPLEMENTATION_QUALITY_CHECK  
-- タスクで定義された成果物が作成されたか？
-- 完了条件がすべて満たされたか？
-- 次のタスクの前提条件が整ったか？
-- APPLY validation-rules.dsl FOR 4-LEVEL VALIDATION
-- APPLY app-types.dsl FOR APPLICATION-SPECIFIC VALIDATION
-
-## ERROR_RECOVERY
-- 品質チェック失敗時は該当フェーズに戻る
-- ドキュメント修正後は後続フェーズを再実行
-- 実装エラー時はtasks.mdの見直しから開始
+## QUALITY_CONTROL
+各フェーズ完了時に checklist.dsl の該当チェックリストを実行する
