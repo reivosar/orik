@@ -85,6 +85,8 @@ claude_dsl:
       then:
         - action: load_dsl
           target: "spec-driven.dsl"
+        - action: load_dsl
+          target: "checklist.dsl"
         - action: develop
     
     - action: present_checklist
