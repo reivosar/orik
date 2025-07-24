@@ -1,5 +1,5 @@
 claude_dsl:
-  version: "0.3"
+  version: "0.6"
   variables:
     question_priorities:
       critical: ["scenario", "core_functionality", "acceptance_criteria"]
@@ -7,9 +7,14 @@ claude_dsl:
       detailed: ["edge_cases", "error_handling", "performance_requirements"]
     
     time_constraints:
-      minimal: "critical"
+      minimal: ["critical"]  # normalized to array for consistency
       standard: ["critical", "important"] 
       comprehensive: ["critical", "important", "detailed"]
+      
+    # question_priorities maps to time_constraints:
+    # priorities.critical -> time_constraints.minimal
+    # priorities.[critical,important] -> time_constraints.standard
+    # priorities.[critical,important,detailed] -> time_constraints.comprehensive
     
     question_mode:
       interview: "ask_user_for_answers"
@@ -34,6 +39,9 @@ claude_dsl:
         refactor: "Refactoring/internal optimization only"
         infra_perf: "Infrastructure/performance improvements"
 
+    recommendation_settings:
+      load_from: "recommendation-settings.dsl"
+      
     requirements_questions:
       functional:
         - "What specific functionality needs to be built?"
@@ -174,7 +182,7 @@ claude_dsl:
       - "Target value and measurement method?"
       - "Load profile and test scenario?"
     
-    design_questions:
+    design_questions_detailed:
       architecture:
         - "What are the main components/modules needed?"
         - "How do components interact with each other?"
@@ -207,12 +215,12 @@ claude_dsl:
   rules:
     - if: scenario == "new_product"
       then:
-        ask: ["requirements_questions", "feature_spec_questions", "design_questions", "tasks_questions", "test_spec_questions"]
+        ask: ["requirements_questions", "feature_spec_questions", "design_questions_detailed", "tasks_questions", "test_spec_questions"]
         priority: "comprehensive"
     
     - if: scenario == "major_feature"
       then:
-        ask: ["requirements_questions", "feature_spec_questions", "design_questions", "tasks_questions", "test_spec_questions"]
+        ask: ["requirements_questions", "feature_spec_questions", "design_questions_detailed", "tasks_questions", "test_spec_questions"]
         priority: "standard"
     
     - if: scenario == "ui_change"
@@ -231,7 +239,7 @@ claude_dsl:
     
     - if: scenario == "spec_change"
       then:
-        ask: ["requirements_questions", "feature_spec_questions", "design_questions.affected_areas", "tasks_questions", "test_spec_questions"]
+        ask: ["requirements_questions", "feature_spec_questions", "design_questions_detailed.affected_areas", "tasks_questions", "test_spec_questions"]
         priority: "standard"
     
     - if: scenario == "refactor"
@@ -245,23 +253,22 @@ claude_dsl:
     
     - if: scenario == "infra_perf"
       then:
-        ask: ["performance_questions", "design_questions.technical_decisions", "tasks_questions", "test_spec_questions"]
+        ask: ["performance_questions", "design_questions_detailed.technical_decisions", "tasks_questions", "test_spec_questions"]
         priority: "standard"
         additional_questions:
           - "What performance issues are being addressed?"
           - "What are the quantitative performance targets?"
 
-  components:
-    recommendation_settings:
-      load_from: "recommendation-settings.dsl"
-      
-    scenario_classification:
-
   flow:
+    - action: set_vars
+      with:
+        task_context: "${context.task_context}"
+        user_choice: "none"  # Initialize to prevent undefined reference
+    
     - action: determine_mode
       with:
         default: "${variables.question_mode.hybrid}"
-        user_preference: "${args.mode}"
+        user_preference: "${context.mode}"
       as: mode
     
     - action: classify_scenario
@@ -274,13 +281,20 @@ claude_dsl:
         scenario: "${scenario}"
         rules: "${rules}"
         priorities: "${variables.time_constraints}"
-      as: question_plan  # {questions: [...], priority: "...", required_fields: [...]}
+      as: question_plan  # {questions: [...], priority: "minimal|standard|comprehensive", required_fields: [...]}
+      
+      # determine_question_set MUST:
+      # - collect questions per rules.ask (+ additional_questions)
+      # - choose priority via variables.time_constraints[priority]
+      # - build required_fields by picking mapping keys whose sources overlap with selected question groups
     
     - if: mode == "recommendation" or mode == "hybrid"
       then:
-        - action: load_recommendation_settings
-          with:
-            source: "${components.recommendation_settings.load_from}"
+        - action: load_flow
+          file: "recommendation-settings.dsl"
+          context:
+            scenario: "${scenario}"
+            task_context: "${context}"
           as: rec_settings
         
         - action: ask_policy_preference
@@ -295,9 +309,9 @@ claude_dsl:
         - action: generate_recommendations
           with:
             scenario: "${scenario}"
-            settings: "${rec_settings}"
+            settings: "${rec_settings.out}"
             policy: "${policy_choice}"
-            context: "${args.context}"
+            task_context: "${context}"
           as: recommendations
         
         - action: present_recommendations
@@ -384,9 +398,9 @@ claude_dsl:
       ui_states_documented: ["feature_spec_questions.ui_design"]
       user_journeys_complete: ["feature_spec_questions.user_experience"]
       data_requirements_specified: ["feature_spec_questions.data_integration"]
-      component_apis_defined: ["design_questions.architecture"]
-      data_flow_documented: ["design_questions.data_flow"]
-      error_handling_specified: ["design_questions.technical_decisions"]
+      component_apis_defined: ["design_questions_detailed.architecture"]
+      data_flow_documented: ["design_questions_detailed.data_flow"]
+      error_handling_specified: ["design_questions_detailed.technical_decisions"]
       implementation_steps_clear: ["tasks_questions.breakdown"]
       dependencies_identified: ["tasks_questions.breakdown"]
       definition_of_done_measurable: ["tasks_questions.definition_of_done"]
@@ -405,10 +419,10 @@ claude_dsl:
     
     step_mapping:
       1: ["requirements_questions.functional", "requirements_questions.scope"]
-      2: ["feature_spec_questions.ui_design", "design_questions.architecture"]
-      3: ["design_questions.data_flow", "tasks_questions.breakdown"]
+      2: ["feature_spec_questions.ui_design", "design_questions_detailed.architecture"]
+      3: ["design_questions_detailed.data_flow", "tasks_questions.breakdown"]
       4: ["test_spec_questions.scope", "bug_specific_questions"]
-      5: ["validation_completeness_check"]
+      5: []  # validation is separate action, not part of questions
     
     techniques:
       - "ask_open_ended_first"

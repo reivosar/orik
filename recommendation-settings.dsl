@@ -1,5 +1,5 @@
 claude_dsl:
-  version: "0.1"
+  version: "0.6"
   description: "Recommendation settings for system policies and scenario-specific defaults"
   
   variables:
@@ -241,8 +241,8 @@ claude_dsl:
   flow:
     - action: set_vars
       with:
-        scenario: "${args.scenario}"
-        context: "${args.context}"
+        scenario: "${context.scenario}"
+        task_context: "${context.task_context}"
     
     # First, ask for any information that requires human judgment or is unknown
     - action: identify_required_information
@@ -263,7 +263,7 @@ claude_dsl:
     - action: analyze_recommendation_scope
       with:
         scenario: "${scenario}"
-        context: "${context + user_responses}"
+        context: "${task_context + user_responses}"
       as: rec_scope   # {can_analyze:[], best_practices:[], needs_confirmation:[]}
     
     # Present comprehensive recommendation offer
@@ -294,7 +294,7 @@ claude_dsl:
         - action: generate_comprehensive_recommendations
           with:
             scenario: "${scenario}"
-            context: "${context + user_responses}"
+            context: "${task_context + user_responses}"
             source: "${source_preference}"
           as: recommendations
         

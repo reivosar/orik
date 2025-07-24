@@ -1,5 +1,5 @@
 claude_dsl:
-  version: "0.1"
+  version: "0.6"
   description: "Document creation policies and procedures for orik framework"
   
   variables:

@@ -1,5 +1,5 @@
 claude_dsl:
-  version: "0.4"
+  version: "0.6"
   description: "Complete spec-driven development controller with integrated workflow"
   
   variables:
@@ -27,7 +27,13 @@ claude_dsl:
       load_from: "document-creation-policy.dsl"
       
     quality_gates:
-      load_from: "checklist.dsl"
+      # Inline quality gates (checklist.dsl converted to DSL format)
+      validation_categories:
+        - document_completeness
+        - traceability_coverage
+        - test_coverage
+        - accessibility_compliance
+        - performance_targets
       
     questioning_framework:
       load_from: "questions.dsl"
@@ -51,13 +57,70 @@ claude_dsl:
         - "Does this involve important architectural decisions?"
     
     document_requirements:
-      new_product: {fr: create, fs: create, design: create, tasks: create, test_spec: create, trace: create, adr: note, sdp: skip}
-      major_feature: {fr: revise, fs: revise, design: revise, tasks: revise, test_spec: revise, trace: update, adr: note, sdp: skip}
-      ui_change: {fr: revise, fs: revise, design: skip, tasks: create, test_spec: create, trace: update, adr: skip, sdp: skip}
-      bug_fix: {fr: reference, fs: skip, design: skip, tasks: create, test_spec: create, trace: update, adr: skip, sdp: skip}
-      spec_change: {fr: revise, fs: revise, design: revise, tasks: revise, test_spec: revise, trace: update, adr: note, sdp: skip}
-      refactor: {fr: skip, fs: skip, design: note, tasks: create, test_spec: note, trace: update, adr: note, sdp: skip}
-      infra_perf: {fr: skip, nfr: create, fs: skip, design: revise, tasks: create, test_spec: create, trace: update, adr: note, sdp: skip}
+      new_product:
+        fr: create
+        fs: create
+        design: create
+        tasks: create
+        test_spec: create
+        trace: create
+        adr: note
+        sdp: skip
+      major_feature:
+        fr: revise
+        fs: revise
+        design: revise
+        tasks: revise
+        test_spec: revise
+        trace: update
+        adr: note
+        sdp: skip
+      ui_change:
+        fr: revise
+        fs: revise
+        design: skip
+        tasks: create
+        test_spec: create
+        trace: update
+        adr: skip
+        sdp: skip
+      bug_fix:
+        fr: reference
+        fs: skip
+        design: skip
+        tasks: create
+        test_spec: create
+        trace: update
+        adr: skip
+        sdp: skip
+      spec_change:
+        fr: revise
+        fs: revise
+        design: revise
+        tasks: revise
+        test_spec: revise
+        trace: update
+        adr: note
+        sdp: skip
+      refactor:
+        fr: skip
+        fs: skip
+        design: note
+        tasks: create
+        test_spec: note
+        trace: update
+        adr: note
+        sdp: skip
+      infra_perf:
+        fr: skip
+        nfr: create
+        fs: skip
+        design: revise
+        tasks: create
+        test_spec: create
+        trace: update
+        adr: note
+        sdp: skip
 
   rules:
     - name: "template_usage"
@@ -81,9 +144,16 @@ claude_dsl:
       enforce: true
 
   flow:
-    - action: load_policies
-      with:
-        policies: ["document-creation-policy.dsl", "questions.dsl", "checklist.dsl"]
+    - action: load_flow
+      file: "document-creation-policy.dsl"
+      as: doc_policy_result
+    
+    - action: load_flow
+      file: "questions.dsl"
+      context:
+        scenario: "${scenario}"
+        task_context: "${task_context}"
+      as: questions_result
     
     - action: initialize_document_structure
       with:

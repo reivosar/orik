@@ -1,5 +1,5 @@
 claude_dsl:
-  version: "0.3"
+  version: "0.6"
   variables:
     validation_passed: false
     behaviors_list:
@@ -36,6 +36,21 @@ claude_dsl:
     checklist_basic: "${variables.checklist_questions}"
     
     mandatory_rules: "${variables.mandatory_rules_list}"
+    
+    # Define previously missing components
+    validation_rules:
+      - "All scenarios must be properly classified"
+      - "Required information must be gathered"
+      - "Documentation must be complete before proceeding"
+    
+    work_process:
+      - "Classify task type"
+      - "Route to appropriate workflow"
+      - "Execute checklist validation"
+    
+    validation:
+      completeness_check: "Verify all required steps completed"
+      quality_check: "Ensure output meets standards"
   
   rules:
     - if: not validation_passed
@@ -44,10 +59,9 @@ claude_dsl:
         message: "Development validation rules loaded from spec-driven.dsl"
     - if: task_type == "development"
       then:
-        include:
-          - components.validation_rules
-          - components.work_process
-          - components.validation
+        action: delegate_to_spec_driven
+        with:
+          validation_rules: "${components.validation_rules}"
   
   flow:
     - action: assign_role
@@ -63,20 +77,20 @@ claude_dsl:
     # MANDATORY: Route development tasks to spec-driven controller
     - if: task_type == "development"
       then:
-        - action: load_dsl
-          target: "spec-driven.dsl"
-        - action: execute_spec_driven_workflow
-        # Note: spec-driven.dsl handles complete development workflow
+        - action: load_flow
+          file: "spec-driven.dsl"
+          context:
+            task_type: "${task_type}"
+            validation_rules: "${components.validation_rules}"
+          as: spec_result
     
     - else:
       then:
         - action: handle_non_development_request
           with:
             message: "This appears to be a research/analysis task. How can I help?"
-    
-    - action: present_checklist
-      target: components.checklist_basic
-    
-    - action: confirm
-      with:
-        message: "Did I follow every principle?"
+        - action: present_checklist
+          target: components.checklist_basic
+        - action: confirm
+          with:
+            message: "Did I follow every principle?"
