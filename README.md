@@ -50,12 +50,12 @@ Claude:
 
 ```
 orik/
-├── entry-point.dsl              # Entry point & task routing
-├── spec-driven.dsl              # Main development controller (v0.4)
+├── entry-point.dsl              # Entry point & task routing (v0.6)
+├── spec-driven.dsl              # Main development controller (v0.6)
 ├── flow.dsl                     # Core workflow engine (v0.6)
-├── questions.dsl                # Scenario-based question sets (v0.2)
-├── checklist.dsl                # Quality gates & validation
-├── document-creation-policy.dsl # Document creation rules & procedures
+├── questions.dsl                # Scenario-based question sets (v0.6)
+├── recommendation-settings.dsl  # AI recommendation system (v0.6)
+├── document-creation-policy.dsl # Document creation rules & procedures (v0.6)
 └── templates/
     ├── requirements-template.md      # Functional & Non-functional requirements
     ├── feature-spec-template.md      # UI/UX specifications with data models
@@ -192,24 +192,30 @@ Time: 60 minutes vs 3 hours traditional
 
 ## Advanced Features
 
-### Composite Scenario Handling
+### AI Recommendation System
 ```bash
-# Automatically detects and merges complex requirements
-User: "Update user profile UI and improve error handling"
-Claude: Detected composite [ui_change + design_improvement]
-- Merged question set: 12 UI questions + 6 error handling questions
-- Document plan: FS(revise) + D(revise) + T(create) + TC(revise)
-- Priority resolution: create > revise > update > reference
+# Three-mode operation for flexible interaction
+User: "Fix login button bug"
+Claude: 
+- Mode: Hybrid (default)
+- Analysis: Can recommend fix approach, testing strategy
+- Required: Bug description, expected behavior
+- Choice: [Accept AI suggestions] [Modify] [Manual questions]
 ```
 
-### Question Intelligence
-```bash
-# Progressive drilling based on answers
-Step 1: "What type of development?" → UI Change
-Step 2: "Which UI components?" → Login form + Navigation
-Step 3: "What specific changes?" → Button styling + Error messages
-Step 4: "How to test?" → Visual regression + Error scenarios
-Result: Precise, actionable requirements in 4 questions
+### DSL-Driven Execution
+```yaml
+# Structured workflow with explicit control flow
+entry-point.dsl:
+  - action: classify_task           # Determine scenario
+  - action: load_flow              # Route to spec-driven.dsl
+    file: "spec-driven.dsl"
+    context: { task_type: "development" }
+
+spec-driven.dsl:
+  - action: load_flow              # Load question system
+    file: "questions.dsl" 
+    context: { scenario: "bug_fix" }
 ```
 
 ### Quality Gates Integration
@@ -232,27 +238,43 @@ cd orik
 # Copy templates to your project
 ```
 
-### 2. First Use  
+### 2. DSL Architecture
+**Execution Flow:**
+```
+entry-point.dsl (Router) → spec-driven.dsl (Controller) → Other DSL files
+```
+
+**Key Features:**
+- **Version 0.6 Unified**: All DSL files use consistent v0.6 interface
+- **Context-Based**: Variables flow through context dictionary
+- **Explicit Loading**: `action: load_flow file:"target.dsl"`
+- **Error Handling**: Standardized `{ok:bool, out:obj, err?:string}` format
+
+### 3. First Use  
 ```bash
 # Start Claude session with:
 "Follow entry-point.dsl for complete DSL execution"
 
 # Claude will automatically:
-# - Classify your request scenario
-# - Ask targeted questions
-# - Create optimal documentation
-# - Validate completeness
+# - Route through entry-point.dsl (task classification)
+# - Execute spec-driven.dsl (main workflow)
+# - Load questions.dsl (intelligent questioning)
+# - Apply recommendation-settings.dsl (AI suggestions)
+# - Create documents via document-creation-policy.dsl
 ```
 
-### 3. Customization
+### 4. Customization
 ```bash
 # Modify question sets for your domain
 vi questions.dsl
 
-# Adjust quality thresholds
-vi flow.dsl
+# Adjust recommendation policies
+vi recommendation-settings.dsl
 
-# Update templates for your standards
+# Update document creation rules
+vi document-creation-policy.dsl
+
+# Customize templates for your standards
 vi templates/*.md
 ```
 
