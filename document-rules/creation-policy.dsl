@@ -69,23 +69,26 @@ components:
       skip: [fr, fs]
 
 quality_enforcement:
-  pre_creation_checks:
-    - template_exists
-    - directory_structure_valid
-    - permissions_adequate
-    - naming_convention_valid
+  pre_creation_checks: [
+    template_exists,
+    directory_structure_valid,
+    permissions_adequate,
+    naming_convention_valid
+  ]
   
-  post_creation_validation:
-    - all_sections_completed
-    - cross_references_valid
-    - id_consistency_maintained
-    - traceability_updated
+  post_creation_validation: [
+    all_sections_completed,
+    cross_references_valid,
+    id_consistency_maintained,
+    traceability_updated
+  ]
   
-  continuous_validation:
-    - orphaned_references_detection
-    - document_synchronization
-    - version_consistency
-    - template_compliance
+  continuous_validation: [
+    orphaned_references_detection,
+    document_synchronization,
+    version_consistency,
+    template_compliance
+  ]
 
 automation_rules:
   trace_regeneration:

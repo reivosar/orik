@@ -62,35 +62,40 @@ components:
       time_savings: 50%
 
 routing_logic:
-  classification_process:
-    - present_classification_questions
-    - analyze_user_responses
-    - match_against_scenario_indicators
-    - determine_primary_scenario
-    - validate_classification_with_user
-    - route_to_appropriate_workflow
+  classification_process: [
+    present_classification_questions,
+    analyze_user_responses,
+    match_against_scenario_indicators,
+    determine_primary_scenario,
+    validate_classification_with_user,
+    route_to_appropriate_workflow
+  ]
   
-  multi_scenario_handling:
-    - detect_overlapping_scenarios
-    - prioritize_dominant_scenario
-    - note_secondary_considerations
-    - adjust_documentation_requirements
+  multi_scenario_handling: [
+    detect_overlapping_scenarios,
+    prioritize_dominant_scenario,
+    note_secondary_considerations,
+    adjust_documentation_requirements
+  ]
   
-  ambiguity_resolution:
-    - ask_clarifying_questions
-    - provide_scenario_examples
-    - explain_documentation_implications
-    - get_user_confirmation
+  ambiguity_resolution: [
+    ask_clarifying_questions,
+    provide_scenario_examples,
+    explain_documentation_implications,
+    get_user_confirmation
+  ]
 
 validation_rules:
-  classification_accuracy:
-    - scenario_matches_indicators
-    - documentation_scope_appropriate
-    - time_estimation_realistic
-    - user_confirms_understanding
+  classification_accuracy: [
+    scenario_matches_indicators,
+    documentation_scope_appropriate,
+    time_estimation_realistic,
+    user_confirms_understanding
+  ]
   
-  edge_case_handling:
-    - hybrid_scenarios_documented
-    - special_requirements_captured
-    - exceptions_explicitly_noted
-    - fallback_scenarios_defined
+  edge_case_handling: [
+    hybrid_scenarios_documented,
+    special_requirements_captured,
+    exceptions_explicitly_noted,
+    fallback_scenarios_defined
+  ]

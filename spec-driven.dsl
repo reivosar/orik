@@ -192,14 +192,16 @@ flow:
       validate_structure: true
 
 validation:
-  pre_creation:
-    - check_template_availability
-    - validate_directory_structure
-    - ensure_permissions
+  pre_creation: [
+    check_template_availability,
+    validate_directory_structure,
+    ensure_permissions
+  ]
     
-  post_creation:
-    - validate_document_format
-    - check_id_consistency
-    - verify_traceability
-    - update_latest_symlinks
-    - regenerate_trace_matrix
+  post_creation: [
+    validate_document_format,
+    check_id_consistency,
+    verify_traceability,
+    update_latest_symlinks,
+    regenerate_trace_matrix
+  ]
