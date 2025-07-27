@@ -12,81 +12,93 @@ variables:
 
 components:
   document_quality_checks:
-    requirements_quality:
-      - specific_and_implementable
-      - no_ambiguous_specifications
-      - sufficient_detail_for_implementation
-      - testable_acceptance_criteria
-      - measurable_success_metrics
+    requirements_quality: [
+      specific_and_implementable,
+      no_ambiguous_specifications,
+      sufficient_detail_for_implementation,
+      testable_acceptance_criteria,
+      measurable_success_metrics
+    ]
     
-    specification_quality:
-      - ui_states_clearly_defined
-      - user_interactions_documented
-      - data_models_specified
-      - api_endpoints_documented
-      - error_scenarios_covered
+    specification_quality: [
+      ui_states_clearly_defined,
+      user_interactions_documented,
+      data_models_specified,
+      api_endpoints_documented,
+      error_scenarios_covered
+    ]
     
-    design_quality:
-      - architecture_clearly_explained
-      - component_responsibilities_defined
-      - data_flow_documented
-      - integration_points_specified
-      - technical_constraints_identified
+    design_quality: [
+      architecture_clearly_explained,
+      component_responsibilities_defined,
+      data_flow_documented,
+      integration_points_specified,
+      technical_constraints_identified
+    ]
     
-    tasks_quality:
-      - specific_and_executable
-      - clear_completion_criteria
-      - dependencies_identified
-      - time_estimates_provided
-      - definition_of_done_explicit
+    tasks_quality: [
+      specific_and_executable,
+      clear_completion_criteria,
+      dependencies_identified,
+      time_estimates_provided,
+      definition_of_done_explicit
+    ]
     
-    test_quality:
-      - comprehensive_test_coverage
-      - automation_strategy_defined
-      - environment_matrix_specified
-      - performance_budgets_set
-      - accessibility_requirements_included
+    test_quality: [
+      comprehensive_test_coverage,
+      automation_strategy_defined,
+      environment_matrix_specified,
+      performance_budgets_set,
+      accessibility_requirements_included
+    ]
 
   completeness_validation:
-    template_sections:
-      - all_mandatory_sections_filled
-      - no_placeholder_text_remaining
-      - proper_formatting_applied
-      - required_metadata_present
+    template_sections: [
+      all_mandatory_sections_filled,
+      no_placeholder_text_remaining,
+      proper_formatting_applied,
+      required_metadata_present
+    ]
     
-    content_depth:
-      - sufficient_detail_level
-      - implementation_guidance_clear
-      - business_context_provided
-      - technical_context_adequate
+    content_depth: [
+      sufficient_detail_level,
+      implementation_guidance_clear,
+      business_context_provided,
+      technical_context_adequate
+    ]
     
-    cross_document_consistency:
-      - terminology_consistent
-      - references_valid
-      - version_alignment
-      - scope_boundaries_clear
+    cross_document_consistency: [
+      terminology_consistent,
+      references_valid,
+      version_alignment,
+      scope_boundaries_clear
+    ]
 
 quality_enforcement:
   gate_categories:
     documentation_phase:
-      critical_gates:
-        - template_compliance
-        - section_completeness
-        - cross_reference_validity
-      warning_gates:
-        - writing_quality
-        - formatting_consistency
-        - terminology_usage
+      critical_gates: [
+        template_compliance,
+        section_completeness,
+        cross_reference_validity
+      ]
+      warning_gates: [
+        writing_quality,
+        formatting_consistency,
+        terminology_usage
+      ]
     
     validation_phase:
-      critical_gates:
-        - traceability_coverage
-        - requirement_testability
-        - implementation_feasibility
-      warning_gates:
-        - performance_considerations
-        - security_implications
-        - accessibility_coverage
+      critical_gates: [
+        traceability_coverage,
+        requirement_testability,
+        implementation_feasibility
+      ]
+      warning_gates: [
+        performance_considerations,
+        security_implications,
+        accessibility_coverage
+      ]
   
   failure_handling:
     critical_failure:
